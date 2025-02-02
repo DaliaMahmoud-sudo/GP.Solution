@@ -17,7 +17,7 @@ namespace GP.Core.Entities.Identity
         public ICollection<Notification> Notifications { get; set; } = new HashSet<Notification>();
         public ICollection<Review> Reviews { get; set; }= new HashSet<Review>();
 
-
+        public ICollection<Appointment> Appointments { get; set; } = new HashSet<Appointment>();
 
     }
 }

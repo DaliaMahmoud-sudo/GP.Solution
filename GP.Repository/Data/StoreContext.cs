@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Talabat.Core.Entites.OrderAggregate;
+using GP.Core.Entites.OrderAggregate;
 
 namespace GP.Repository.Data
 {

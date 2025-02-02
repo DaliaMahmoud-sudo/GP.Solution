@@ -1,19 +1,25 @@
 
+using GP.APIs.Extensions;
+using GP.Core.Entities.Identity;
+using GP.Core.Services;
 using GP.Repository.Data;
-//using GP.Repository.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 
 namespace GP.APIs
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
+            #region Configure Service
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -22,14 +28,36 @@ namespace GP.APIs
             {
                 Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
-        /*    builder.Services.AddDbContext<AppIdentityDbContext>(Options =>
-            {
-                Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });*/
+
+
+            builder.Services.AddIdentityServices(builder.Configuration);
+            #endregion
 
 
             var app = builder.Build();
-           
+            #region Update-Database
+            using var Scope = app.Services.CreateScope();
+            var Services = Scope.ServiceProvider;
+            var LoggerFactory = Services.GetRequiredService<ILoggerFactory>();
+            try
+            {
+
+                var DbContext = Services.GetRequiredService<StoreContext>();
+                await DbContext.Database.MigrateAsync();
+
+               
+                var UserManager = Services.GetRequiredService<UserManager<AppUser>>();
+                await AdminSeed.SeedAdminAsync(UserManager);
+             //   await StoreContextSeed.SeedAsync(DbContext);
+            }
+            catch (Exception ex)
+            {
+                var Logger = LoggerFactory.CreateLogger<Program>();
+                Logger.LogError(ex, "an error accured during applying the migration");
+
+            }
+            #endregion
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -40,8 +68,11 @@ namespace GP.APIs
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseStaticFiles();
 
+            app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.MapControllers();
 

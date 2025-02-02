@@ -6,4 +6,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GP.Core\GP.Core.csproj" />
+    <ProjectReference Include="..\GP.Repository\GP.Repository.csproj" />
+  </ItemGroup>
+
 </Project>

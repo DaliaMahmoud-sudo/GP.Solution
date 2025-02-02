@@ -17,8 +17,8 @@ namespace GP.Core.Entities.Identity
         public string Bio { get; set; }
      
         public ICollection<AvailableTimes> AvailableTimes { get; set; } = new HashSet<AvailableTimes>();
-       
 
+        public ICollection<Appointment> Appointments { get; set; } = new HashSet<Appointment>();
 
         public ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
 

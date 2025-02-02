@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Talabat.Core.Entites.OrderAggregate;
+using GP.Core.Entites.OrderAggregate;
 
-namespace Talabat.Repository.Data.Configuration
+namespace GP.Repository.Data.Configuration
 {
     public class OrderConfig : IEntityTypeConfiguration<Order>
     {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Talabat.Core.Entites.OrderAggregate
+namespace GP.Core.Entites.OrderAggregate
 {
     public class Order
     {

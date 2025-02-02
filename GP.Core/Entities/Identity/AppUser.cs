@@ -14,6 +14,6 @@ namespace GP.Core.Entities.Identity
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public Address Address { get; set; }
-        public ICollection<Appointment> Appointments { get; set; } = new HashSet<Appointment>();
+       
     }
 }
