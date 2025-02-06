@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using GP.APIs.DTOs;
 using GP.APIs.Controllers;
-using GP.Core.Services;
+
 
 
 namespace Talabat.APIs.Controllers
@@ -15,27 +15,23 @@ namespace Talabat.APIs.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
-        private readonly ITokenService _tokenService;
+        
 
         public AccountsController(UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager, ITokenService tokenService
+            SignInManager<AppUser> signInManager
 
             )
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _tokenService = tokenService;
+           
         }
         //Register
         [HttpPost("Register")]
         public async Task<ActionResult<AppUserDto>> Register(RegisterDto model)
         {
 
-           /* if(CheckEmailExists(model.Email).Result.Value)
-            {
-                return BadRequest(new ApiResponse(400, "Email already exists"));  
-            }
-*/
+
 
 
             var User = new AppUser()
@@ -53,7 +49,7 @@ namespace Talabat.APIs.Controllers
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Email = model.Email,
-                Token = await _tokenService.CreateTokenAsync(User, _userManager)
+               
             };
             return Ok(ReturnedUser);
 
@@ -77,7 +73,7 @@ namespace Talabat.APIs.Controllers
                 FirstName = AppUser.FirstName,
                 LastName = AppUser.LastName,
                 Email = AppUser.Email,
-               Token = await _tokenService.CreateTokenAsync(AppUser, _userManager)
+              
 
             });
         }

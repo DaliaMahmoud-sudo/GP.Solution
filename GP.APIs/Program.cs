@@ -1,7 +1,6 @@
 
 using GP.APIs.Extensions;
 using GP.Core.Entities.Identity;
-using GP.Core.Services;
 using GP.Repository.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
