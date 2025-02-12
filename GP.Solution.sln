@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GP.APIs", "GP.APIs\GP.APIs.csproj", "{CF997D74-B600-475A-A778-236F1A1A1DF5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GP.APIs", "GP.APIs\GP.APIs.csproj", "{CF997D74-B600-475A-A778-236F1A1A1DF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GP.Core", "GP.Core\GP.Core.csproj", "{8835603E-E968-4BFD-8B83-E5212573AB5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GP.Core", "GP.Core\GP.Core.csproj", "{8835603E-E968-4BFD-8B83-E5212573AB5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GP.Repository", "GP.Repository\GP.Repository.csproj", "{7981CAA4-5EF3-4ED8-906F-EE51B7DDA4EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GP.Repository", "GP.Repository\GP.Repository.csproj", "{7981CAA4-5EF3-4ED8-906F-EE51B7DDA4EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GP.Service", "GP.Service\GP.Service.csproj", "{74422504-CAE7-4BE1-A5A8-0D69BA616238}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GP.Service", "GP.Service\GP.Service.csproj", "{74422504-CAE7-4BE1-A5A8-0D69BA616238}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utility", "Utility\Utility.csproj", "{38B51A90-BE91-4003-94E7-D3D7E0791B80}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{74422504-CAE7-4BE1-A5A8-0D69BA616238}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74422504-CAE7-4BE1-A5A8-0D69BA616238}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74422504-CAE7-4BE1-A5A8-0D69BA616238}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38B51A90-BE91-4003-94E7-D3D7E0791B80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38B51A90-BE91-4003-94E7-D3D7E0791B80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38B51A90-BE91-4003-94E7-D3D7E0791B80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38B51A90-BE91-4003-94E7-D3D7E0791B80}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

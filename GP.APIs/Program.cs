@@ -1,7 +1,9 @@
 
 using GP.APIs.Extensions;
 using GP.Core.Entities.Identity;
+using GP.Core.IRepository;
 using GP.Repository.Data;
+using GP.Service.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +29,17 @@ namespace GP.APIs
             {
                 Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
-
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped(typeof(IXRayReportRepository), typeof(XRayReportRepository));
+            builder.Services.AddScoped(typeof(IUserCartRepository), typeof(UserCartRepository));
+            builder.Services.AddScoped(typeof(IReviewRepository), typeof(ReviewRepository));
+            builder.Services.AddScoped(typeof(IProductRepository), typeof(ProductRepository));
+            builder.Services.AddScoped(typeof(IOrderRepository), typeof(OrderRepository));
+            builder.Services.AddScoped(typeof(IOrderItemRepository), typeof(OrderItemRepository));
+            builder.Services.AddScoped(typeof(INotificationRepository), typeof(NotificationRepository));
+            builder.Services.AddScoped(typeof(ICartItemsRepository), typeof(CartItemsRepository));
+            builder.Services.AddScoped(typeof(IAppointmentRepository), typeof(AppointmentRepository));
+                                                                             
 
             builder.Services.AddIdentityServices(builder.Configuration);
             #endregion
