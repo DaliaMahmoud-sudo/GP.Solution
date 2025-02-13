@@ -17,26 +17,16 @@ namespace GP.APIs.Extensions
           
             Services.AddIdentity<AppUser, IdentityRole>()
                        .AddEntityFrameworkStores<StoreContext>();
-            Services.AddAuthentication (Options =>
+            Services.AddAuthentication(Options =>
             {
-                Options.DefaultAuthenticateScheme= JwtBearerDefaults.AuthenticationScheme;
-                Options.DefaultChallengeScheme= JwtBearerDefaults.AuthenticationScheme; 
+                Options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                Options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
-            })
-                .AddJwtBearer(Options =>
-                {
-                    Options.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = configuration["JWT:ValidIssuer"],
-                        ValidateAudience= true,
-                        ValidAudience = configuration["JWT:ValidAudience"],
-                        ValidateLifetime= true,
-                        ValidateIssuerSigningKey=true,
-                        IssuerSigningKey= new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]))
-                    };
+            });
+                
 
-                });
+                
+                
             return Services;
 
         }

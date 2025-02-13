@@ -62,7 +62,7 @@ namespace GP.Service.Repository
         {
             dbSet.Update(entity);
         }
-
+     
         public void Delete(T entity)
         {
             dbSet.Remove(entity);
@@ -72,5 +72,7 @@ namespace GP.Service.Repository
         {
             dbContext.SaveChanges();
         }
+
+      
     }
 }

@@ -1,6 +1,7 @@
 ﻿using GP.Core.Entities;
 using GP.Core.IRepository;
 using GP.Repository.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,17 @@ namespace GP.Service.Repository
     public class ProductRepository : Repository<Product> , IProductRepository
     {
         private readonly StoreContext dbContext;
+       
+      
 
         public ProductRepository(StoreContext dbContext) : base(dbContext)
         {
             this.dbContext=dbContext;
+            
+
         }
+      
+
+ 
     }
 }

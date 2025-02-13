@@ -9,5 +9,7 @@ namespace GP.Core.IRepository
 {
     public interface IProductRepository : IRepository<Product>
     {
+      
+       
     }
 }

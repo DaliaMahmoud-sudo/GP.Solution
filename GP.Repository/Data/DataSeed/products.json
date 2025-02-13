@@ -1,0 +1,129 @@
+[
+  {
+    "Name": "Night Cream",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 200,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 5
+
+  },
+  {
+    "Name": "Hand Cream",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 200,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 3
+  },
+  {
+    "Name": "UnderEye Cream",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 200,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 5
+  },
+  {
+    "Name": "SunScreen",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 300,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 5
+  },
+  {
+    "Name": "Hair Serum",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 200,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 5
+  },
+  {
+    "Name": "BodyLotion",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price":900,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 9
+  },
+  {
+    "Name": "Motinorm",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 200,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 5
+  },
+  {
+    "Name": "Zisrocin",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 100,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 1
+  },
+  {
+    "Name": "Vonaspire",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 200,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 5
+  },
+  {
+    "Name": "Pandol Extra",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 200,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 7
+  },
+  {
+    "Name": "Panadol Cold&Flu",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 200,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 5
+  },
+  {
+    "Name":"Flix",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 200,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 5
+  },
+  {
+    "Name": "Congestal",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 200,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 5
+  },
+  {
+    "Name": "Antenal",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 200,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 5
+  },
+  {
+    "Name": "sinupert",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 200,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 5
+  },
+  {
+    "Name": "SunBlock",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 200,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 5
+  },
+  {
+    "Name": "Micellar Water",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 200,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 4
+  },
+  {
+    "Name": "Alcohol 500ml",
+    "Description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.",
+    "Price": 200,
+    "ImageUrl": "images/products/sb-ang1.png",
+    "StockQuantity": 5
+  }
+]
