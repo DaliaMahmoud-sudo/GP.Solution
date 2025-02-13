@@ -1,4 +1,5 @@
 ﻿using GP.APIs.DTOs;
+using GP.APIs.Errors;
 using GP.Core.Entities.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -24,6 +25,11 @@ namespace GP.APIs.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register(AppUserDto userDTO)
         {
+            if (CheckEmailExists(userDTO.Email).Result.Value)
+            {
+                return BadRequest(new ApiResponse(400, "Email already exists"));
+            }
+
             if (roleManager.Roles.IsNullOrEmpty())
             {
                 await roleManager.CreateAsync(new(SD.AdminRole));
@@ -91,6 +97,12 @@ namespace GP.APIs.Controllers
         {
             await signInManager.SignOutAsync();
             return Ok();
+        }
+        [HttpGet("emailExists")]
+        public async Task<ActionResult<bool>> CheckEmailExists(string Email)
+        {
+            return await userManager.FindByEmailAsync(Email) is not null;
+
         }
     }
 }

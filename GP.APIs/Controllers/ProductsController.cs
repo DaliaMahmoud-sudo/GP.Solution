@@ -67,6 +67,7 @@ namespace GP.APIs.Controllers
             return Ok();
         }
         //Upsert
+        //insert id for update
         [HttpPost]
         public IActionResult AddOrUpdateProduct([FromBody] Product product)
         {
@@ -76,7 +77,7 @@ namespace GP.APIs.Controllers
             }
 
             var existingProduct = _Repo.GetOne(null, p => p.Id == product.Id, true);
-
+            //update product 
             if (existingProduct != null)
             {
                 
