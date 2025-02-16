@@ -12,6 +12,8 @@ using GP.Core.IRepository;
 using GP.Core.Entities;
 using Microsoft.AspNetCore.Hosting;
 using GP.Service.Repository;
+using static GP.Core.Specifications.ProductWithSpec;
+using GP.Core.Specifications;
 
 namespace GP.APIs.Controllers
 {
@@ -33,9 +35,10 @@ namespace GP.APIs.Controllers
         
         [HttpGet]
 
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts([FromQuery] ProductSpecParams Params)
         {
-            var Products =  _Repo.Get();
+            var Spec = new ProductWithSpec(Params);
+            var Products = await _Repo.GetAllWithSpecAsync(Spec);
             return Ok(Products);
         }
 

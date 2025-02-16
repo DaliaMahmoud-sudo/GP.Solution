@@ -1,4 +1,7 @@
-﻿using GP.Core.IRepository;
+﻿using GP.Core.Entites.OrderAggregate;
+using GP.Core.IRepository;
+using GP.Core.Specifications;
+using GP.Repository;
 using GP.Repository.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,7 +17,8 @@ namespace GP.Service.Repository
     {
         private readonly StoreContext dbContext;
         private DbSet<T> dbSet;
-
+        public Expression<Func<T, object>> OrderBy { get; set; }
+        public Expression<Func<T, object>> OrderByDesc { get; set; }
         public Repository(StoreContext dbContext)
         {
             this.dbContext = dbContext;
@@ -22,8 +26,11 @@ namespace GP.Service.Repository
         }
 
         // CRUD operations
-        public IEnumerable<T> Get(Expression<Func<T, object>>[]? includeProps = null, Expression<Func<T, bool>>? expression = null, bool tracked = true)
+        public IEnumerable<T> Get( Expression<Func<T, object>>[]? includeProps = null, Expression<Func<T, bool>>? expression = null, bool tracked = true)
         {
+           
+            
+
             IQueryable<T> query = dbSet;
 
             if (expression != null)
@@ -52,6 +59,10 @@ namespace GP.Service.Repository
         {
             return Get(includeProps, expression, tracked).FirstOrDefault();
         }
+        public async Task<IReadOnlyList<T>> GetAllWithSpecAsync(ISpecifications<T> Spec)
+        {
+            return await ApplySpecification(Spec).ToListAsync();
+        }
 
         public void Create(T entity)
         {
@@ -72,7 +83,20 @@ namespace GP.Service.Repository
         {
             dbContext.SaveChanges();
         }
+        private IQueryable<T> ApplySpecification(ISpecifications<T> Spec)
+        {
+            return SpecificationEvalutor<T>.GetQuery(dbContext.Set<T>(), Spec);
+        }
+        public void AddOrderBy(Expression<Func<T, object>> orderByExpression)
+        {
+            OrderBy = orderByExpression;
 
-      
+        }
+        public void AddOrderByDesc(Expression<Func<T, object>> orderByDescExpression)
+        {
+            OrderByDesc = orderByDescExpression;
+        }
+
+
     }
 }
