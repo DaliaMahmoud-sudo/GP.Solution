@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Hosting;
 using GP.Service.Repository;
 using static GP.Core.Specifications.ProductWithSpec;
 using GP.Core.Specifications;
+using AutoMapper;
 
 namespace GP.APIs.Controllers
 {
@@ -22,23 +23,26 @@ namespace GP.APIs.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IRepository<Product> _Repo;
-       
+        private readonly IMapper _mapper;
 
-        public ProductsController(IRepository<Product> Repo) {
+        public ProductsController(IRepository<Product> Repo, IMapper mapper) {
             _Repo = Repo;
-           
+            _mapper = mapper;
         }
 
 
 
         //Get all products
         
-        [HttpGet]
+        [HttpGet("GetAllProducts")]
 
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts([FromQuery] ProductSpecParams Params)
         {
             var Spec = new ProductWithSpec(Params);
             var Products = await _Repo.GetAllWithSpecAsync(Spec);
+            var MappedProducts = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(Products);
+
+            return Ok(MappedProducts);
             return Ok(Products);
         }
 
@@ -71,7 +75,7 @@ namespace GP.APIs.Controllers
         }
         //Upsert
         //insert id for update
-        [HttpPost]
+        [HttpPost("UpdateAndCreateProduct")]
         public IActionResult AddOrUpdateProduct([FromBody] Product product)
         {
             if (product == null)
