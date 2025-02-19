@@ -17,12 +17,7 @@ namespace GP.APIs.Extensions
           
             Services.AddIdentity<AppUser, IdentityRole>()
                        .AddEntityFrameworkStores<StoreContext>();
-            Services.AddAuthentication(Options =>
-            {
-                Options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                Options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-            });
+            Services.AddAuthentication();
                 
 
                 

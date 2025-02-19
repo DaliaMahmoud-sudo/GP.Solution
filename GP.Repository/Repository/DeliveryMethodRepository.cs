@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GP.Repository.Repository
+namespace GP.Service.Repository
 {
     public class DeliveryMethodRepository : Repository<DeliveryMethod> , IDeliveryMethodRepository
     {

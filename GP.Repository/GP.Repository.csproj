@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GP.Core\GP.Core.csproj" />
+	  
   </ItemGroup>
 
 </Project>

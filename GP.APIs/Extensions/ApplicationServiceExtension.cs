@@ -9,7 +9,6 @@ using System.Text;
 using GP.Core.Entities.Identity;
 using GP.Core.IRepository;
 using GP.Service.Repository;
-using GP.Repository.Repository;
 using GP.APIs.Helpers;
 
 namespace GP.APIs.Extensions

@@ -1,18 +1,14 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+
 using GP.APIs.DTOs;
 using GP.APIs.Errors;
 
-using GP.Core.Entites;
+
 using GP.Core.IRepository;
 
 using GP.Core.Entities;
-using Microsoft.AspNetCore.Hosting;
-using GP.Service.Repository;
-using static GP.Core.Specifications.ProductWithSpec;
+
 using GP.Core.Specifications;
 using AutoMapper;
 
@@ -43,7 +39,7 @@ namespace GP.APIs.Controllers
             var MappedProducts = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(Products);
 
             return Ok(MappedProducts);
-            return Ok(Products);
+            
         }
 
         //get products by id
@@ -54,8 +50,10 @@ namespace GP.APIs.Controllers
 
             var Product =  _Repo.GetOne(null,p => p.Id == id,true);
             if (Product == null) return NotFound(new ApiResponse(404));
+            var MappedProducts = _mapper.Map<Product, ProductToReturnDto>(Product);
+            return Ok(MappedProducts);
 
-            return Ok(Product);
+          
         }
 
 
@@ -87,6 +85,7 @@ namespace GP.APIs.Controllers
             //update product 
             if (existingProduct != null)
             {
+                 _Repo.Edit(existingProduct);
                 
                 existingProduct.Name = product.Name;
                 existingProduct.Price = product.Price;

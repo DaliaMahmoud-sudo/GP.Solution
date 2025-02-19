@@ -29,6 +29,7 @@ namespace GP.Core.IRepository
 
         //prop for orderByDesc
         public Expression<Func<T, Object>> OrderByDesc { get; set; }
+       
 
     }
 }

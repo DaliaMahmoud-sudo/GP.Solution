@@ -1,6 +1,8 @@
 ﻿using GP.Core.Entities.Identity;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,16 +11,28 @@ namespace GP.Core.Entities
 {
     public class UserCart
     {
-        public UserCart(string id)
+
+
+       // public UserCart() { }
+
+        // Constructor with 'id' parameter (optional, if needed elsewhere)
+        public UserCart()
         {
-            Id = id;
+
+            Items = new List<CartItems>();
         }
 
-        public string Id { get; set; }
-        public List<CartItems> Items { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }  // Cart ID (same as User ID)
 
-    /*    public int UserId { get; set; }
-        public User User { get; set; }*/
-       
+        //  Foreign Key to User
+        public string UserId { get; set; }
+        public User User { get; set; }  // Navigation property
+        public List<CartItems> Items { get; set; } 
+
+
+
+
     }
 }
