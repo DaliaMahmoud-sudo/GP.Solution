@@ -14,7 +14,7 @@ namespace GP.Core.Entites.OrderAggregate
         {
             
         }
-        public Order(string buyerEmail, Address shippingAddress, DeliveryMethod deliveryMethod, ICollection<OrderItem> items, decimal subTotal, string paymentIntentId)
+        public Order(string buyerEmail, ShippingAddress shippingAddress, DeliveryMethod deliveryMethod, ICollection<OrderItem> items, decimal subTotal, string paymentIntentId)
         {
             BuyerEmail = buyerEmail;
             ShippingAddress = shippingAddress;
@@ -27,7 +27,7 @@ namespace GP.Core.Entites.OrderAggregate
         public string BuyerEmail { get; set; }
         public DateTimeOffset OrderDate { get; set; }
         public Status Status { get; set; } = Status.Pending;
-        public Address ShippingAddress { get; set; }
+        public ShippingAddress ShippingAddress { get; set; }
        
         public DeliveryMethod DeliveryMethod { get; set; }
 

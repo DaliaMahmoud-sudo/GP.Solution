@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace GP.Core.Entites.OrderAggregate
 {
-    public class Address
+    public class ShippingAddress
     {
-        public Address()
+        public ShippingAddress()
         {
             
         }
-        public Address(string firstName, string lastName, string city, string street, string country)
+        public ShippingAddress(string firstName, string lastName, string city, string street, string country)
         {
             FirstName = firstName;
             LastName = lastName;
