@@ -1,6 +1,7 @@
 ﻿using GP.Core.Entites.OrderAggregate;
 using GP.Core.Entities.Identity;
 using GP.Core.IRepository;
+using GP.Service.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +15,21 @@ namespace GP.APIs.Controllers
     {
         private readonly IOrderRepository orderRepository;
         private readonly IOrderItemRepository orderItemRepository;
+        private readonly IDeliveryMethodRepository deliveryMethodRepository;
         private readonly UserManager<AppUser> userManager;
+        private readonly IProductRepository productRepository;
 
-        public OrderController(IOrderRepository orderRepository, IOrderItemRepository orderItemRepository, UserManager<AppUser> userManager)
+        public OrderController(IOrderRepository orderRepository, 
+            IOrderItemRepository orderItemRepository, 
+            IDeliveryMethodRepository deliveryMethodRepository,
+            UserManager<AppUser> userManager,
+            IProductRepository productRepository)
         {
             this.orderRepository=orderRepository;
             this.orderItemRepository=orderItemRepository;
+            this.deliveryMethodRepository=deliveryMethodRepository;
             this.userManager=userManager;
+            this.productRepository=productRepository;
         }
 
         [HttpGet("GetOrders")]
@@ -50,44 +59,97 @@ namespace GP.APIs.Controllers
         [HttpPost("CreateOrder")]
         public async Task<IActionResult> CreateOrder([FromBody] Order order)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             if (!User.Identity.IsAuthenticated)
             {
                 return Unauthorized("User is not authenticated.");
             }
 
-            var userName = User.Identity.Name;
             var user = await userManager.GetUserAsync(User);
             if (user == null)
             {
-                return Unauthorized($"User '{userName}' not found.");
+                return Unauthorized("User not found.");
             }
 
-            order.BuyerEmail = "test@gmail.com";
+            // 🛑 Load existing delivery method instead of creating a new one
+            var existingDeliveryMethod =  deliveryMethodRepository.GetOne(expression: e => e.Id == order.DeliveryMethod.Id);
+            if (existingDeliveryMethod == null)
+            {
+                return BadRequest("Invalid delivery method.");
+            }
+            order.DeliveryMethod = existingDeliveryMethod; // Use existing one
+
+            // 🛑 Ensure shipping address exists
+            if (order.ShippingAddress == null)
+            {
+                order.ShippingAddress = new ShippingAddress();
+            }
+
+            order.BuyerEmail = user.Email;
             order.OrderDate = DateTimeOffset.UtcNow;
-            order.ShippingAddress.FirstName = "test";
-            order.ShippingAddress.LastName = "test";
-            if (order.ShippingAddress == null ||
-        string.IsNullOrWhiteSpace(order.ShippingAddress.City) ||
-        string.IsNullOrWhiteSpace(order.ShippingAddress.Street) ||
-        string.IsNullOrWhiteSpace(order.ShippingAddress.Country))
+            order.ShippingAddress.FirstName = user.FirstName;
+            order.ShippingAddress.LastName = user.LastName;
+
+            // 🛑 Ensure that the same product is not added twice in the same order
+            var validatedItems = new List<OrderItem>();
+
+            foreach (var item in order.Items)
             {
-                return BadRequest("Invalid shipping address.");
+                // 🛑 Fetch the existing OrderItem from DB (assuming it exists)
+                var existingOrderItem = orderItemRepository.GetOne(expression:e => e.Id == item.Id);
+
+                if (existingOrderItem == null)
+                {
+                    return BadRequest($"Order item with ID {item.Id} not found.");
+                }
+
+                // 🛑 Ensure the product is properly loaded from DB
+                var existingProduct = productRepository.GetOne(expression:e => e.Id == existingOrderItem.Product.ProductId);
+
+                if (existingProduct == null)
+                {
+                    return BadRequest($"Product with ID {existingOrderItem.Product.ProductId} not found.");
+                }
+
+                // ✅ Assign fetched ProductItemOrdered
+                existingOrderItem.Product = new ProductItemOrdered
+                {
+                    ProductId = existingProduct.Id,
+                    ProductName = existingProduct.Name,
+                    ImageUrl = existingProduct.ImageUrl
+                };
+
+                // ✅ Ensure the quantity and price are updated
+                existingOrderItem.Quantity = item.Quantity;
+                existingOrderItem.Price = existingProduct.Price;
+
+                // ✅ Add the validated order item
+                validatedItems.Add(existingOrderItem);
             }
 
-            if (order.DeliveryMethod == null || order.Items == null || order.Items.Count == 0)
-            {
-                return BadRequest("Invalid order details.");
-            }
+            // ✅ Assign the validated items back to the order
+            order.Items = validatedItems;
 
-            order.SubTotal = order.Items.Sum(item => item.Quantity * item.Price);
-            
+
+            order.SubTotal = order.Items.Sum(item => item.Quantity * item.Price) + order.GetTotal();
+
             orderRepository.Create(order);
             orderRepository.Commit();
+
             return Ok(order);
         }
+
+
+
+        [HttpGet("test-user")]
+        public async Task<IActionResult> TestUser()
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized("User not found.");
+            }
+            return Ok(new { user.Email, user.FirstName, user.LastName });
+        }
+
     }
 }

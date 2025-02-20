@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,7 @@ namespace GP.Core.Entites.OrderAggregate
             Price = price;
         }
         public int Id { get; set; }
+        [ValidateNever]
         public ProductItemOrdered Product { get; set; }
         public int Quantity { get; set; }
         public decimal Price { get; set; }

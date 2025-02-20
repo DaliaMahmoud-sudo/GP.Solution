@@ -1,10 +1,13 @@
 ﻿using GP.Core.Entities;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+
 
 namespace GP.Core.Entites.OrderAggregate
 {
@@ -24,13 +27,16 @@ namespace GP.Core.Entites.OrderAggregate
             PaymentIntentId = paymentIntentId;
         }
         public int Id { get; set; }
+
+        [ValidateNever]
         public string BuyerEmail { get; set; }
         public DateTimeOffset OrderDate { get; set; }
         public Status Status { get; set; } = Status.Pending;
+        [ValidateNever]
         public ShippingAddress ShippingAddress { get; set; }
-       
+        [ValidateNever]
         public DeliveryMethod DeliveryMethod { get; set; }
-
+        [ValidateNever]
         public ICollection<OrderItem> Items { get; set; } = new HashSet<OrderItem>();
 
         public decimal SubTotal { get; set; }
