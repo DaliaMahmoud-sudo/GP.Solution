@@ -13,7 +13,6 @@ namespace GP.Core.Entities.Identity
       
         public string Specializtion { get; set; }
        
-        public string ImageUrl { get; set; }
         public string Bio { get; set; }
      
         public ICollection<AvailableTimes> AvailableTimes { get; set; } = new HashSet<AvailableTimes>();

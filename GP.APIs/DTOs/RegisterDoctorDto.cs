@@ -2,7 +2,7 @@
 
 namespace GP.APIs.DTOs
 {
-    public class AppUserDto
+    public class RegisterDoctorDto
     {
         public int Id { get; set; }
         [Required]
@@ -20,9 +20,9 @@ namespace GP.APIs.DTOs
         [DataType(DataType.Password)]
         [Compare(nameof(Password))]
         public string ConfirmPassword { get; set; }
-        //[Required]
-        //public string Address { get; set; }
+        [Required]
+        public string Specializtion { get; set; }
 
-
+        public string? Bio { get; set; }
     }
 }

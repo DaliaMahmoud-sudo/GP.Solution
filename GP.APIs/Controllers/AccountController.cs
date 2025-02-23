@@ -43,7 +43,8 @@ namespace GP.APIs.Controllers
                     FirstName = userDTO.FirstName,
                     LastName = userDTO.LastName,
                     Email = userDTO.Email,
-                    UserName = userDTO.Email.Split('@')[0]
+                    UserName = userDTO.Email.Split('@')[0],
+                    PhoneNumber = userDTO.PhoneNumber
                 };
                 var result = await userManager.CreateAsync(applicationUser, userDTO.Password);
                 if (result.Succeeded)
@@ -51,6 +52,51 @@ namespace GP.APIs.Controllers
                     // Ok
                     // Assign role to user
                     await userManager.AddToRoleAsync(applicationUser, SD.ClientRole);
+                    await signInManager.SignInAsync(applicationUser, false);
+
+                    return Ok();
+                }
+
+                return BadRequest(result.Errors);
+            }
+
+            return BadRequest(userDTO);
+
+
+        }
+
+        [HttpPost("RegisterDoctor")]
+        public async Task<IActionResult> RegisterDoctor(RegisterDoctorDto userDTO)
+        {
+            if (CheckEmailExists(userDTO.Email).Result.Value)
+            {
+                return BadRequest(new ApiResponse(400, "Email already exists"));
+            }
+
+            if (roleManager.Roles.IsNullOrEmpty())
+            {
+                await roleManager.CreateAsync(new(SD.AdminRole));
+                await roleManager.CreateAsync(new(SD.ClientRole));
+                await roleManager.CreateAsync(new(SD.DoctorRole));
+            }
+            if (ModelState.IsValid)
+            {
+                Doctor applicationUser = new Doctor()
+                {
+                    FirstName = userDTO.FirstName,
+                    LastName = userDTO.LastName,
+                    Email = userDTO.Email,
+                    UserName = userDTO.Email.Split('@')[0],
+                    Specializtion = userDTO.Specializtion,
+                    Bio = userDTO.Bio ?? "",
+                    PhoneNumber = userDTO.PhoneNumber
+                };
+                var result = await userManager.CreateAsync(applicationUser, userDTO.Password);
+                if (result.Succeeded)
+                {
+                    // Ok
+                    // Assign role to user
+                    await userManager.AddToRoleAsync(applicationUser, SD.DoctorRole);
                     await signInManager.SignInAsync(applicationUser, false);
 
                     return Ok();
