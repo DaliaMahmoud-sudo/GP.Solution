@@ -51,12 +51,14 @@ namespace GP.APIs.Controllers
         public IActionResult GetReviewById(int id)
         {
             var review = _Repo.GetOne(null, R => R.ReviewId == id, true);
+           
+
             if (review == null)
             {
                 return NotFound(new ApiResponse(404));
             }
-          
-            return Ok(review);
+            var MappedReview= _mapper.Map<Review, ReviewDto>(review);
+            return Ok(MappedReview);
         }
 
 

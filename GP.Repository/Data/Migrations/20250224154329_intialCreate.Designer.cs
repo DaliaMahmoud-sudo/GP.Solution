@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GP.Repository.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20250222133916_AddedTables")]
-    partial class AddedTables
+    [Migration("20250224154329_intialCreate")]
+    partial class intialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -385,13 +385,11 @@ namespace GP.Repository.Data.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ReviewId");
 
                     b.HasIndex("DoctorId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Reviews");
                 });
@@ -626,10 +624,6 @@ namespace GP.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Specializtion")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -796,15 +790,7 @@ namespace GP.Repository.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GP.Core.Entities.Identity.User", "User")
-                        .WithMany("Reviews")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Doctor");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GP.Core.Entities.UserCart", b =>
@@ -924,8 +910,6 @@ namespace GP.Repository.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Notifications");
-
-                    b.Navigation("Reviews");
 
                     b.Navigation("XRayReports");
                 });
