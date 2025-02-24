@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GP.Repository.Data.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20250218132158_AddUserCartAndCartItemTables")]
-    partial class AddUserCartAndCartItemTables
+    [Migration("20250222133916_AddedTables")]
+    partial class AddedTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -376,10 +376,8 @@ namespace GP.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DoctorId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DoctorId1")
+                    b.Property<string>("DoctorId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Rating")
@@ -391,7 +389,7 @@ namespace GP.Repository.Data.Migrations
 
                     b.HasKey("ReviewId");
 
-                    b.HasIndex("DoctorId1");
+                    b.HasIndex("DoctorId");
 
                     b.HasIndex("UserId");
 
@@ -657,7 +655,7 @@ namespace GP.Repository.Data.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.OwnsOne("GP.Core.Entites.OrderAggregate.Address", "ShippingAddress", b1 =>
+                    b.OwnsOne("GP.Core.Entites.OrderAggregate.ShippingAddress", "ShippingAddress", b1 =>
                         {
                             b1.Property<int>("OrderId")
                                 .HasColumnType("int");
@@ -794,7 +792,9 @@ namespace GP.Repository.Data.Migrations
                 {
                     b.HasOne("GP.Core.Entities.Identity.Doctor", "Doctor")
                         .WithMany("Reviews")
-                        .HasForeignKey("DoctorId1");
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("GP.Core.Entities.Identity.User", "User")
                         .WithMany("Reviews")

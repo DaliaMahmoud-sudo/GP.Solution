@@ -13,7 +13,7 @@ namespace GP.APIs.Helpers
             CreateMap<Product, ProductToReturnDto>()
                     .ForMember(d => d.ImageUrl, O => O.MapFrom<ProductImageUrlResolver>());
 
-        
+            CreateMap<Review, ReviewDto>();
             }
     } 
 }

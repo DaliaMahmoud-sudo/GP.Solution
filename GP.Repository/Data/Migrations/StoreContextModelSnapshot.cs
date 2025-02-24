@@ -47,7 +47,7 @@ namespace GP.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliveryMethod");
+                    b.ToTable("DeliveryMethod", (string)null);
                 });
 
             modelBuilder.Entity("GP.Core.Entites.OrderAggregate.Order", b =>
@@ -83,7 +83,7 @@ namespace GP.Repository.Data.Migrations
 
                     b.HasIndex("DeliveryMethodId");
 
-                    b.ToTable("Order");
+                    b.ToTable("Order", (string)null);
                 });
 
             modelBuilder.Entity("GP.Core.Entites.OrderAggregate.OrderItem", b =>
@@ -107,7 +107,7 @@ namespace GP.Repository.Data.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItem");
+                    b.ToTable("OrderItem", (string)null);
                 });
 
             modelBuilder.Entity("GP.Core.Entities.Appointment", b =>
@@ -155,7 +155,7 @@ namespace GP.Repository.Data.Migrations
 
                     b.HasIndex("UserId1");
 
-                    b.ToTable("Appointments");
+                    b.ToTable("Appointments", (string)null);
                 });
 
             modelBuilder.Entity("GP.Core.Entities.CartItems", b =>
@@ -187,7 +187,7 @@ namespace GP.Repository.Data.Migrations
 
                     b.HasIndex("UserCartId");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("GP.Core.Entities.Identity.AppUser", b =>
@@ -298,7 +298,7 @@ namespace GP.Repository.Data.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("AvailableTimes");
+                    b.ToTable("AvailableTimes", (string)null);
                 });
 
             modelBuilder.Entity("GP.Core.Entities.Notification", b =>
@@ -327,7 +327,7 @@ namespace GP.Repository.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("notifications");
+                    b.ToTable("notifications", (string)null);
                 });
 
             modelBuilder.Entity("GP.Core.Entities.Product", b =>
@@ -358,7 +358,7 @@ namespace GP.Repository.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("products");
+                    b.ToTable("products", (string)null);
                 });
 
             modelBuilder.Entity("GP.Core.Entities.Review", b =>
@@ -373,10 +373,8 @@ namespace GP.Repository.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DoctorId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DoctorId1")
+                    b.Property<string>("DoctorId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Rating")
@@ -388,11 +386,11 @@ namespace GP.Repository.Data.Migrations
 
                     b.HasKey("ReviewId");
 
-                    b.HasIndex("DoctorId1");
+                    b.HasIndex("DoctorId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("GP.Core.Entities.UserCart", b =>
@@ -412,7 +410,7 @@ namespace GP.Repository.Data.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("UserCarts");
+                    b.ToTable("UserCarts", (string)null);
                 });
 
             modelBuilder.Entity("GP.Core.Entities.XRayReport", b =>
@@ -441,7 +439,7 @@ namespace GP.Repository.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("xRayReports");
+                    b.ToTable("xRayReports", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -614,7 +612,7 @@ namespace GP.Repository.Data.Migrations
                     b.HasIndex("AppUserId")
                         .IsUnique();
 
-                    b.ToTable("Address");
+                    b.ToTable("Address", (string)null);
                 });
 
             modelBuilder.Entity("GP.Core.Entities.Identity.Doctor", b =>
@@ -654,7 +652,7 @@ namespace GP.Repository.Data.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.OwnsOne("GP.Core.Entites.OrderAggregate.Address", "ShippingAddress", b1 =>
+                    b.OwnsOne("GP.Core.Entites.OrderAggregate.Order.ShippingAddress#GP.Core.Entites.OrderAggregate.ShippingAddress", "ShippingAddress", b1 =>
                         {
                             b1.Property<int>("OrderId")
                                 .HasColumnType("int");
@@ -681,7 +679,7 @@ namespace GP.Repository.Data.Migrations
 
                             b1.HasKey("OrderId");
 
-                            b1.ToTable("Order");
+                            b1.ToTable("Order", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");
@@ -699,7 +697,7 @@ namespace GP.Repository.Data.Migrations
                         .WithMany("Items")
                         .HasForeignKey("OrderId");
 
-                    b.OwnsOne("GP.Core.Entites.OrderAggregate.ProductItemOrdered", "Product", b1 =>
+                    b.OwnsOne("GP.Core.Entites.OrderAggregate.OrderItem.Product#GP.Core.Entites.OrderAggregate.ProductItemOrdered", "Product", b1 =>
                         {
                             b1.Property<int>("OrderItemId")
                                 .HasColumnType("int");
@@ -717,7 +715,7 @@ namespace GP.Repository.Data.Migrations
 
                             b1.HasKey("OrderItemId");
 
-                            b1.ToTable("OrderItem");
+                            b1.ToTable("OrderItem", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderItemId");
@@ -791,7 +789,9 @@ namespace GP.Repository.Data.Migrations
                 {
                     b.HasOne("GP.Core.Entities.Identity.Doctor", "Doctor")
                         .WithMany("Reviews")
-                        .HasForeignKey("DoctorId1");
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("GP.Core.Entities.Identity.User", "User")
                         .WithMany("Reviews")
