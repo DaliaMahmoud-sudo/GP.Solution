@@ -37,11 +37,11 @@ namespace GP.APIs.Controllers
         public async Task<ActionResult<IEnumerable<Review>>> GetReviewsForDr(string id)
         {
 
-            var reviews =  _Repo.Get(includeProps: new Expression<Func<Review, object>>[]
+            var reviews = _Repo.Get(includeProps: new Expression<Func<Review, object>>[]
     {
         reviews => reviews.Doctor // Include the UserCartItems
-    }, R => R.DoctorId == id,true);
-            var MappedReviews= _mapper.Map<IEnumerable<Review>, IEnumerable< ReviewDto>>(reviews);
+    }, R => R.DoctorId == id, true);
+            var MappedReviews = _mapper.Map<IEnumerable<Review>, IEnumerable<ReviewDto>>(reviews);
             return Ok(MappedReviews);
 
         }

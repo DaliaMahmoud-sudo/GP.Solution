@@ -140,16 +140,7 @@ namespace GP.APIs.Controllers
 
 
 
-        [HttpGet("test-user")]
-        public async Task<IActionResult> TestUser()
-        {
-            var user = await userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return Unauthorized("User not found.");
-            }
-            return Ok(new { user.Email, user.FirstName, user.LastName });
-        }
+    
 
     }
 }
