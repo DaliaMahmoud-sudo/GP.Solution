@@ -23,5 +23,6 @@ namespace GP.Core.Entities
         }
         public MessageStatus Status { get; set; }
         public DateTimeOffset DeliveredAt { get; set; }
+        
     }
 }

@@ -19,6 +19,7 @@ namespace GP.Core.Entities
         public Status AppointmentStatus { get; set; }
         public string Note { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
+        public bool IsReviewed { get; set; } = false;
 
 
     }

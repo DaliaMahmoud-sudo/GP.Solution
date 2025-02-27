@@ -3,6 +3,7 @@ using GP.APIs.Extensions;
 using GP.Core.Entities.Identity;
 using GP.Core.IRepository;
 using GP.Repository.Data;
+using GP.Service;
 using GP.Service.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -37,6 +38,9 @@ namespace GP.APIs
             });
 
             builder.Services.AddAplicationServices();
+            builder.Services.AddHostedService<NotificationBackgroundService>();
+
+
 
             builder.Services.AddIdentityServices(builder.Configuration);
             #endregion

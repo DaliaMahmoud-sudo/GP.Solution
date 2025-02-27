@@ -9,5 +9,6 @@ namespace GP.Core.IRepository
 {
     public interface INotificationRepository : IRepository<Notification>
     {
+        Task<IEnumerable<Notification>> GetUserNotificationsAsync (string userId);
     }
 }
