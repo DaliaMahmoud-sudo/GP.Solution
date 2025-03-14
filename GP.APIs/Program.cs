@@ -1,4 +1,3 @@
-
 using GP.APIs.Extensions;
 using GP.Core.Entities.Identity;
 using GP.Core.IRepository;
@@ -11,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-
 
 namespace GP.APIs
 {
@@ -40,24 +38,32 @@ namespace GP.APIs
             builder.Services.AddAplicationServices();
             builder.Services.AddHostedService<NotificationBackgroundService>();
 
-
+            // Add CORS policy
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin() // Allow requests from any origin
+                               .AllowAnyMethod() // Allow any HTTP method (GET, POST, etc.)
+                               .AllowAnyHeader(); // Allow any headers
+                    });
+            });
 
             builder.Services.AddIdentityServices(builder.Configuration);
             #endregion
 
-
             var app = builder.Build();
+
             #region Update-Database
             using var Scope = app.Services.CreateScope();
             var Services = Scope.ServiceProvider;
             var LoggerFactory = Services.GetRequiredService<ILoggerFactory>();
             try
             {
-
                 var DbContext = Services.GetRequiredService<StoreContext>();
                 await DbContext.Database.MigrateAsync();
 
-               
                 var UserManager = Services.GetRequiredService<UserManager<AppUser>>();
                 await AdminSeed.SeedAdminAsync(UserManager);
                 await StoreContextSeed.SeedAsync(DbContext);
@@ -65,11 +71,9 @@ namespace GP.APIs
             catch (Exception ex)
             {
                 var Logger = LoggerFactory.CreateLogger<Program>();
-                Logger.LogError(ex, "an error accured during applying the migration");
-
+                Logger.LogError(ex, "An error occurred during applying the migration");
             }
             #endregion
-
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -81,6 +85,9 @@ namespace GP.APIs
             app.UseHttpsRedirection();
 
             app.UseStaticFiles();
+
+            // Enable CORS middleware
+            app.UseCors("AllowAllOrigins");
 
             app.UseAuthentication();
 
