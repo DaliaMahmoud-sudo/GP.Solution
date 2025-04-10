@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GP.Core.IRepository
+namespace Utility
 {
-    interface Interface1
+    public class StripeSettings
     {
+        public string? SecretKey { get; set; }
     }
 }

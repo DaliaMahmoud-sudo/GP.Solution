@@ -5,9 +5,12 @@ using GP.Core.Entities;
 using GP.Core.Entities.Identity;
 using GP.Core.IRepository;
 using GP.Repository.Data;
+using GP.Repository.Repository;
 using GP.Service.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Stripe.Checkout;
 using System.Linq.Expressions;
 using System.Security.Claims;
 
@@ -27,15 +30,17 @@ namespace GP.APIs.Controllers
         private readonly IMapper _mapper;
         private readonly UserManager<AppUser> _userManager;
         private readonly ICartItemsRepository _cartItemsRepository;
- 
+        private readonly IPaymentRepository paymentRepository;
 
-        public CartController(IUserCartRepository userCartRepository, IProductRepository productRepository, IMapper mapper, UserManager<AppUser> userManager, ICartItemsRepository cartItemsRepository)
+        public CartController(IUserCartRepository userCartRepository, IProductRepository productRepository, IMapper mapper, UserManager<AppUser> userManager, ICartItemsRepository cartItemsRepository
+            ,IPaymentRepository paymentRepository)
         {
             _userCartRepository = userCartRepository;
             _productRepository = productRepository;
             _mapper = mapper;
             _userManager = userManager;
             _cartItemsRepository = cartItemsRepository;
+            this.paymentRepository=paymentRepository;
         }
         [HttpPost("add")]
         public IActionResult AddProductAndCreateCart(int productId, int quantity)
@@ -43,8 +48,8 @@ namespace GP.APIs.Controllers
 
             var userId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(userId))
-               return Unauthorized(new ApiResponse(401));
-            
+                return Unauthorized(new ApiResponse(401));
+
             var product = _productRepository.GetOne(null, p => p.Id == productId, true);
             if (product.StockQuantity < quantity)
             {
@@ -97,14 +102,14 @@ namespace GP.APIs.Controllers
             _userCartRepository.Commit();
             return Ok();
         }
-     
-        
+
+
         //get cart by id
         [HttpGet("GetUserCart")]
 
         public async Task<ActionResult<UserCart>> GetCart()
         {
-            var id=_userManager.GetUserId(User);
+            var id = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(id))
                 return Unauthorized(new ApiResponse(401));
             var cart = _userCartRepository.GetOne(includeProps: new Expression<Func<UserCart, object>>[]
@@ -119,7 +124,7 @@ namespace GP.APIs.Controllers
         public async Task<IActionResult> RemoveProductFromCart(int itemId)
         {
             // Get user ID from cookies
-            
+
             var userId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized(new ApiResponse(401));
@@ -131,12 +136,12 @@ namespace GP.APIs.Controllers
     {
         cart => cart.Items // Include the UserCartItems
     }, c => c.UserId == userId, true);
-            
+
             if (cart == null)
             {
                 return NotFound("Cart not found.");
             }
-            
+
 
             // Find the product in the cart
             var cartItem = _cartItemsRepository.GetOne(
@@ -148,13 +153,13 @@ namespace GP.APIs.Controllers
             {
                 return NotFound("Product not found in cart.");
             }
-            
+
             // Remove the product from the cart
             cart.Items.Remove(cartItem);
 
             // Save changes
             _userCartRepository.Edit(cart);
-             _userCartRepository.Commit();
+            _userCartRepository.Commit();
 
 
 
@@ -189,9 +194,89 @@ namespace GP.APIs.Controllers
             return cartItem; // returns null if not found
         }
 
+        [Authorize(Roles = "Client")]
+        [HttpPost("Pay")]
+        public async Task<IActionResult> Pay()
+        {
+            // 1. Get current user
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new ApiResponse(401));
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Unauthorized(new ApiResponse(401));
+
+            
+            var cart = _userCartRepository.GetOne(
+                includeProps: [c => c.Items],
+                expression: c => c.UserId == userId,
+                tracked: true
+            );
+
+            // 3. Validate cart
+            if (cart == null || cart.Items == null || !cart.Items.Any())
+                return BadRequest("Your cart is empty.");
+
+            // 4. Calculate total
+            var totalPrice = cart.Items.Sum(item => item.Price * item.Quantity);
+
+            // 5. Create payment record
+            var payment = new Payment
+            {
+                UserId = userId,
+                Name = $"{user.FirstName} {user.LastName}",
+                Email = user.Email,
+                TotalPrice = totalPrice,
+                PaymentDate = DateTimeOffset.UtcNow
+            };
+            paymentRepository.Create(payment);
+
+            // 6. Prepare Stripe session
+            var sessionOptions = new SessionCreateOptions
+            {
+                PaymentMethodTypes = new List<string> { "card" },
+                LineItems = cart.Items.Select(item => new SessionLineItemOptions
+                {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        Currency = "usd",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = item.productName,
+                        },
+                        UnitAmount = (long)(item.Price * 100),
+                    },
+                    Quantity = item.Quantity,
+                }).ToList(),
+                Mode = "payment",
+                SuccessUrl = $"{Request.Scheme}://{Request.Host}/checkout/success?payment_id={payment.paymentId}",
+                CancelUrl = $"{Request.Scheme}://{Request.Host}/checkout/cancel",
+                CustomerEmail = user.Email,
+                Metadata = new Dictionary<string, string>
+        {
+            {"payment_id", payment.paymentId.ToString()},
+            {"user_id", userId}
+        }
+            };
+
+            // 7. Create Stripe session
+            var sessionService = new SessionService();
+            var session = sessionService.Create(sessionOptions);
+
+           
+            paymentRepository.Commit();
+
+            cart.Items.Clear();
+            _userCartRepository.Commit();
+
+            // 10. Return Stripe URL
+            return Ok(new { url = session.Url });
+        }
+
+
 
     }
-
 }
 
 

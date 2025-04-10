@@ -9,7 +9,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Stripe;
 using System.Text;
+using Utility;
 
 namespace GP.APIs
 {
@@ -52,6 +54,10 @@ namespace GP.APIs
 
             builder.Services.AddIdentityServices(builder.Configuration);
             #endregion
+
+            builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+            StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
 
             var app = builder.Build();
 

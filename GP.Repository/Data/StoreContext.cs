@@ -31,5 +31,7 @@ namespace GP.Repository.Data
         public DbSet<UserCart> UserCarts { get; set; }
         public DbSet<CartItems> CartItems { get; set; }
         public DbSet<DeliveryMethod> DeliveryMethod { get; set; }
+
+        public DbSet<Payment> Payments { get; set; }
     }
 }

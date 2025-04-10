@@ -10,6 +10,7 @@ using GP.Core.Entities.Identity;
 using GP.Core.IRepository;
 using GP.Service.Repository;
 using GP.APIs.Helpers;
+using GP.Repository.Repository;
 
 namespace GP.APIs.Extensions
 {
@@ -29,6 +30,7 @@ namespace GP.APIs.Extensions
             Services.AddScoped(typeof(ICartItemsRepository), typeof(CartItemsRepository));
             Services.AddScoped(typeof(IAppointmentRepository), typeof(AppointmentRepository));
             Services.AddScoped(typeof(IDeliveryMethodRepository), typeof(DeliveryMethodRepository));
+            Services.AddScoped(typeof(IPaymentRepository), typeof(PaymentRepository));
             Services.AddAutoMapper(typeof(MappingProfiles));
             return Services;
 
