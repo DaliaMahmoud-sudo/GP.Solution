@@ -12,7 +12,7 @@ namespace GP.Core.Specifications
         public string? Name { get; set; }
         
 
-        private  int  pageSize=5;
+        private  int  pageSize=10;
 
         public int PageSize
         {
