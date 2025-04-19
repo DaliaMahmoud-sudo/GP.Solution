@@ -94,6 +94,7 @@ namespace GP.APIs
 
             // Enable CORS middleware
             app.UseCors("AllowAllOrigins");
+            
 
             app.UseAuthentication();
 

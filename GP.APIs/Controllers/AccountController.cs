@@ -1,6 +1,7 @@
 ﻿using GP.APIs.DTOs;
 using GP.APIs.Errors;
 using GP.Core.Entities.Identity;
+using GP.Core.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +17,14 @@ namespace GP.APIs.Controllers
         private readonly UserManager<AppUser> userManager;
         private readonly SignInManager<AppUser> signInManager;
         private readonly RoleManager<IdentityRole> roleManager;
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<IdentityRole> roleManager)
+        private readonly ITokenService _tokenService;
+
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<IdentityRole> roleManager, ITokenService tokenService)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.roleManager = roleManager;
+            _tokenService = tokenService;
         }
         [HttpPost("Register")]
         public async Task<IActionResult> Register(AppUserDto userDTO)
@@ -125,7 +129,15 @@ namespace GP.APIs.Controllers
                     {
                         // Login ==> Create ID (cookies)
                         await signInManager.SignInAsync(userDb, userDTO.RememberMe);
-                        return Ok();
+                        return Ok(new AppUserDto()
+                        {
+
+                            FirstName = userDb.FirstName,
+                            LastName = userDb.LastName,
+                            Email = userDb.Email,
+                            Token = await _tokenService.CreateTokenAsync(userDb, userManager)
+
+                        });
                     }
                     else
                         // Error in password

@@ -20,6 +20,7 @@ namespace GP.APIs.DTOs
         [DataType(DataType.Password)]
         [Compare(nameof(Password))]
         public string ConfirmPassword { get; set; }
+        public string Token { get; set; }
         //[Required]
         //public string Address { get; set; }
 
