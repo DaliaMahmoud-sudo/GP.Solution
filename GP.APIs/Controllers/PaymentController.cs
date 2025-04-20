@@ -1,9 +1,11 @@
-﻿using GP.Core.Entities.Identity;
+﻿using GP.APIs.Errors;
+using GP.Core.Entities.Identity;
 using GP.Core.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GP.APIs.Controllers
 {
@@ -34,9 +36,22 @@ namespace GP.APIs.Controllers
 
         [Authorize(Roles = "Client")]
         [HttpGet("GetPaymentsForUser")]
-        public IActionResult GetPaymentsForUser()
+        public async Task<IActionResult> GetPaymentsForUser()
         {
-            var userId = userManager.GetUserId(User);
+            // Get the current user's email from the token
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
+                return Unauthorized(new ApiResponse(401));
+
+            // Get user from the database
+            var currentUser = await userManager.FindByEmailAsync(email);
+            if (currentUser == null)
+                return Unauthorized(new ApiResponse(401));
+
+            var userId = currentUser.Id;
+
+            /* var userId = userManager.GetUserId(User)*/
+            ;
             var payments = paymentRepository.Get(expression: e => e.UserId == userId);
 
             if (!payments.Any())
