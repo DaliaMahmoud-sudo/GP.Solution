@@ -249,15 +249,17 @@ namespace GP.APIs.Controllers
                 return Unauthorized(new ApiResponse(401));
 
             var userId = currentUser.Id;
-           
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized(new ApiResponse(401));
+            var firstname = currentUser.FirstName;
+            var lastname = currentUser.LastName;
 
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-                return Unauthorized(new ApiResponse(401));
+            //if (string.IsNullOrEmpty(userId))
+            //    return Unauthorized(new ApiResponse(401));
 
-            
+            //var user = await _userManager.FindByIdAsync(userId);
+            //if (user == null)
+            //    return Unauthorized(new ApiResponse(401));
+
+
             var cart = _userCartRepository.GetOne(
                 includeProps: [c => c.Items],
                 expression: c => c.UserId == userId,
@@ -275,8 +277,8 @@ namespace GP.APIs.Controllers
             var payment = new Payment
             {
                 UserId = userId,
-                Name = $"{user.FirstName} {user.LastName}",
-                Email = user.Email,
+                Name = $"{firstname} {lastname}",
+                Email = email,
                 TotalPrice = totalPrice,
                 PaymentDate = DateTimeOffset.UtcNow
             };
@@ -302,7 +304,7 @@ namespace GP.APIs.Controllers
                 Mode = "payment",
                 SuccessUrl = $"{Request.Scheme}://{Request.Host}/checkout/success?payment_id={payment.paymentId}",
                 CancelUrl = $"{Request.Scheme}://{Request.Host}/checkout/cancel",
-                CustomerEmail = user.Email,
+                CustomerEmail = email,
                 Metadata = new Dictionary<string, string>
         {
             {"payment_id", payment.paymentId.ToString()},
