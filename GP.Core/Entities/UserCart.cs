@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace GP.Core.Entities
 {
@@ -13,7 +14,7 @@ namespace GP.Core.Entities
     {
 
 
-       // public UserCart() { }
+        // public UserCart() { }
 
         // Constructor with 'id' parameter (optional, if needed elsewhere)
         public UserCart()
@@ -28,7 +29,8 @@ namespace GP.Core.Entities
 
         //  Foreign Key to User
         public string UserId { get; set; }
-        public User User { get; set; }  // Navigation property
+    
+    public User User { get; set; }  // Navigation property
         public List<CartItems> Items { get; set; } 
 
 

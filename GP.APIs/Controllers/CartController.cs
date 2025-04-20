@@ -43,64 +43,73 @@ namespace GP.APIs.Controllers
             this.paymentRepository=paymentRepository;
         }
         [HttpPost("add")]
-        public IActionResult AddProductAndCreateCart(int productId, int quantity)
-        {
+        [Authorize]
 
-            var userId = _userManager.GetUserId(User);
-            if (string.IsNullOrEmpty(userId))
+        public async Task<IActionResult> AddProductAndCreateCart(int productId, int quantity)
+        {
+            // Get the current user's email from the token
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
                 return Unauthorized(new ApiResponse(401));
 
+            // Get user from the database
+            var currentUser = await _userManager.FindByEmailAsync(email);
+            if (currentUser == null)
+                return Unauthorized(new ApiResponse(401));
+
+            var userId = currentUser.Id;
+
+            // Get the product from the repository
             var product = _productRepository.GetOne(null, p => p.Id == productId, true);
+            if (product == null)
+                return NotFound(new ApiResponse(404, "Product not found"));
+
             if (product.StockQuantity < quantity)
-            {
-                return BadRequest(new ApiResponse(400, "there is no enough product sorry"));
-            }
-            else
-            {
-                product.StockQuantity-=quantity;
-            }
-            var MappedProduct = _mapper.Map<Product, ProductToReturnDto>(product);
-            if (MappedProduct == null)
-            {
-                return NotFound(new ApiResponse(404));
-            }
+                return BadRequest(new ApiResponse(400, "There is not enough stock available"));
+
+            // Deduct the stock
+            product.StockQuantity -= quantity;
+
+            // Map the product to DTO
+            var mappedProduct = _mapper.Map<Product, ProductToReturnDto>(product);
+            if (mappedProduct == null)
+                return NotFound(new ApiResponse(404, "Mapping failed"));
 
             // Check if the user already has a cart
             var cart = _userCartRepository.GetOne(null, c => c.UserId == userId, true);
             if (cart == null)
             {
-                //Create a new cart for the user
-                cart = new UserCart { UserId = userId, Items = new List<CartItems>() };
+                cart = new UserCart
+                {
+                    UserId = userId,
+                    Items = new List<CartItems>()
+                };
                 _userCartRepository.Create(cart);
             }
 
-
-            // Check if the product already exists in the cart
-            var cartItem = FindCartItemByProductName(cart, MappedProduct.Name);
-
+            // Check if product is already in the cart
+            var cartItem = FindCartItemByProductName(cart, mappedProduct.Name);
             if (cartItem != null)
             {
-
-                // Increase quantity if product is already in the cart
+                // Update quantity
                 cartItem.Quantity += quantity;
             }
-
             else
             {
-                //  Add a new product to the cart
+                // Add new item to the cart
                 cart.Items.Add(new CartItems
                 {
-
-                    productName = MappedProduct.Name,
-                    ImageUrl = MappedProduct.ImageUrl,
-                    Price = MappedProduct.Price,
+                    productName = mappedProduct.Name,
+                    ImageUrl = mappedProduct.ImageUrl,
+                    Price = mappedProduct.Price,
                     Quantity = quantity
                 });
             }
 
-
+            // Save changes
             _userCartRepository.Commit();
-            return Ok();
+
+            return Ok(new ApiResponse(200, "Product added to cart successfully"));
         }
 
 
@@ -109,7 +118,17 @@ namespace GP.APIs.Controllers
 
         public async Task<ActionResult<UserCart>> GetCart()
         {
-            var id = _userManager.GetUserId(User);
+            // Get the current user's email from the token
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
+                return Unauthorized(new ApiResponse(401));
+
+            // Get user from the database
+            var currentUser = await _userManager.FindByEmailAsync(email);
+            if (currentUser == null)
+                return Unauthorized(new ApiResponse(401));
+
+            var id = currentUser.Id;
             if (string.IsNullOrEmpty(id))
                 return Unauthorized(new ApiResponse(401));
             var cart = _userCartRepository.GetOne(includeProps: new Expression<Func<UserCart, object>>[]
@@ -123,9 +142,19 @@ namespace GP.APIs.Controllers
         [HttpDelete("remove-product")]
         public async Task<IActionResult> RemoveProductFromCart(int itemId)
         {
-            // Get user ID from cookies
+            
 
-            var userId = _userManager.GetUserId(User);
+            // Get the current user's email from the token
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
+                return Unauthorized(new ApiResponse(401));
+
+            // Get user from the database
+            var currentUser = await _userManager.FindByEmailAsync(email);
+            if (currentUser == null)
+                return Unauthorized(new ApiResponse(401));
+
+            var userId = currentUser.Id;
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized(new ApiResponse(401));
 
@@ -168,7 +197,17 @@ namespace GP.APIs.Controllers
         [HttpGet("cart-total")]
         public async Task<IActionResult> GetCartTotal()
         {
-            var userId = _userManager.GetUserId(User);
+            // Get the current user's email from the token
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
+                return Unauthorized(new ApiResponse(401));
+
+            // Get user from the database
+            var currentUser = await _userManager.FindByEmailAsync(email);
+            if (currentUser == null)
+                return Unauthorized(new ApiResponse(401));
+
+            var userId = currentUser.Id;
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized(new ApiResponse(401));
 
@@ -199,7 +238,18 @@ namespace GP.APIs.Controllers
         public async Task<IActionResult> Pay()
         {
             // 1. Get current user
-            var userId = _userManager.GetUserId(User);
+            // Get the current user's email from the token
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
+                return Unauthorized(new ApiResponse(401));
+
+            // Get user from the database
+            var currentUser = await _userManager.FindByEmailAsync(email);
+            if (currentUser == null)
+                return Unauthorized(new ApiResponse(401));
+
+            var userId = currentUser.Id;
+           
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized(new ApiResponse(401));
 

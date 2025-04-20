@@ -2,10 +2,12 @@
 using GP.APIs.Errors;
 using GP.Core.Entities.Identity;
 using GP.Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using Utility;
 
 namespace GP.APIs.Controllers
@@ -155,6 +157,21 @@ namespace GP.APIs.Controllers
         {
             await signInManager.SignOutAsync();
             return Ok();
+        }
+        [Authorize]
+        [HttpGet("GetCurrentUser")]
+        public async Task<ActionResult<AppUserDto>> GetCurrentUser()
+        {
+            var Email = User.FindFirstValue(ClaimTypes.Email);
+            var user = await userManager.FindByEmailAsync(Email);
+            var ReturnedObject = new AppUserDto()
+            {
+                Id=user.Id,
+                FirstName = user.FirstName,
+                Email = user.Email,
+                Token = await _tokenService.CreateTokenAsync(user, userManager)
+            };
+            return Ok(ReturnedObject);
         }
         [HttpGet("emailExists")]
         public async Task<ActionResult<bool>> CheckEmailExists(string Email)
