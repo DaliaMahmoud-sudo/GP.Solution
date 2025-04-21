@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Stripe;
 using System.Text;
 using Utility;
@@ -23,41 +24,68 @@ namespace GP.APIs
 
             // Add services to the container.
             #region Configure Service
-            //builder.Services.Configure<ApiBehaviorOptions>(options =>
-            //{
-            //    options.SuppressModelStateInvalidFilter = true;
-            //});
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-            builder.Services.AddDbContext<StoreContext>(Options =>
+
+            builder.Services.AddSwaggerGen(c =>
             {
-                Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "GP API", Version = "v1" });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = @"JWT Authorization header using the Bearer scheme.  
+                                    Enter 'Bearer' [space] and then your token in the text input below.  
+                                    Example: 'Bearer abc123'",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header
+                        },
+                        new List<string>()
+                    }
+                });
+            });
+
+            builder.Services.AddDbContext<StoreContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
             builder.Services.AddAplicationServices();
             builder.Services.AddHostedService<NotificationBackgroundService>();
 
-            // Add CORS policy
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAllOrigins",
                     builder =>
                     {
-                        builder.AllowAnyOrigin() // Allow requests from any origin
-                               .AllowAnyMethod() // Allow any HTTP method (GET, POST, etc.)
-                               .AllowAnyHeader(); // Allow any headers
+                        builder.AllowAnyOrigin()
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
                     });
             });
 
             builder.Services.AddIdentityServices(builder.Configuration);
-            #endregion
-
             builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
             StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
+            #endregion
 
             var app = builder.Build();
 
@@ -92,12 +120,9 @@ namespace GP.APIs
 
             app.UseStaticFiles();
 
-            // Enable CORS middleware
             app.UseCors("AllowAllOrigins");
-            
 
             app.UseAuthentication();
-
             app.UseAuthorization();
 
             app.MapControllers();

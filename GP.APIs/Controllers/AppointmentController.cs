@@ -1,4 +1,5 @@
 ﻿using GP.APIs.DTOs;
+using GP.APIs.Errors;
 using GP.Core.Entities;
 using GP.Core.Entities.Identity;
 using GP.Core.IRepository;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GP.APIs.Controllers
 {
@@ -23,13 +25,25 @@ namespace GP.APIs.Controllers
         }
         [Authorize(Roles = "Doctor")]
         [HttpGet(" GetAppointmentsForDoctor")]
-        public IActionResult GetAppointmentsForDoctor()
+        public async Task<IActionResult> GetAppointmentsForDoctor()
         {
             if (!User.IsInRole("Doctor"))
             {
                 return Forbid("Access denied: Only doctors can view these appointments.");
             }
-            var doctorId = userManager.GetUserId(User);
+
+            // Get the current user's email from the token
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
+                return Unauthorized(new ApiResponse(401));
+
+            // Get user from the database
+            var currentUser = await userManager.FindByEmailAsync(email);
+            if (currentUser == null)
+                return Unauthorized(new ApiResponse(401));
+
+            var doctorId = currentUser.Id;
+            
             var appointments = appointmentRepository.Get(expression: e => e.DoctorId == doctorId);
 
             if (!appointments.Any())
@@ -41,9 +55,21 @@ namespace GP.APIs.Controllers
 
         [Authorize(Roles ="Client")] // Ensures only authenticated users can access
         [HttpGet("GetAppointmentsForUser")]
-        public IActionResult GetAppointmentsForUser()
+        public async Task<IActionResult> GetAppointmentsForUser()
         {
-            var userId = userManager.GetUserId(User);
+            // Get the current user's email from the token
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
+                return Unauthorized(new ApiResponse(401));
+
+            // Get user from the database
+            var currentUser = await userManager.FindByEmailAsync(email);
+            if (currentUser == null)
+                return Unauthorized(new ApiResponse(401));
+
+            var userId = currentUser.Id;
+
+
             var appointments = appointmentRepository.Get(expression: e => e.UserId == userId);
 
             if (!appointments.Any())
@@ -55,14 +81,24 @@ namespace GP.APIs.Controllers
 
         [Authorize(Roles = "Client")]
         [HttpPost("CreateAppointments")]
-        public IActionResult CreateAppointments([FromBody] AppointmentRequestDto appointmentRequestDto)
+        public async Task<IActionResult> CreateAppointments([FromBody] AppointmentRequestDto appointmentRequestDto)
         {
             if (appointmentRequestDto == null || string.IsNullOrEmpty(appointmentRequestDto.DoctorId))
             {
                 return BadRequest("DoctorId is required.");
             }
 
-            var userId = userManager.GetUserId(User);
+            // Get the current user's email from the token
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
+                return Unauthorized(new ApiResponse(401));
+
+            // Get user from the database
+            var currentUser = await userManager.FindByEmailAsync(email);
+            if (currentUser == null)
+                return Unauthorized(new ApiResponse(401));
+
+            var userId = currentUser.Id;
 
             // Check if the doctor already has an appointment at the same time
             bool isDoctorBusy = appointmentRepository

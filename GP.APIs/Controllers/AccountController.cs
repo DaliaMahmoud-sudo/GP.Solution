@@ -179,5 +179,16 @@ namespace GP.APIs.Controllers
             return await userManager.FindByEmailAsync(Email) is not null;
 
         }
+
+        [HttpGet("doctors")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<Doctor>>> GetAllDoctors()
+        {
+            var usersInDoctorRole = await userManager.GetUsersInRoleAsync(SD.DoctorRole);
+            var doctors = usersInDoctorRole.OfType<Doctor>().ToList();
+
+            return Ok(doctors);
+        }
+
     }
 }

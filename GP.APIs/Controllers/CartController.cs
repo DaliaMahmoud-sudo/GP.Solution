@@ -43,8 +43,7 @@ namespace GP.APIs.Controllers
             this.paymentRepository=paymentRepository;
         }
         [HttpPost("add")]
-        [Authorize]
-
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> AddProductAndCreateCart(int productId, int quantity)
         {
             // Get the current user's email from the token
@@ -114,6 +113,7 @@ namespace GP.APIs.Controllers
 
 
         //get cart by id
+        [Authorize(Roles = "Client")]
         [HttpGet("GetUserCart")]
 
         public async Task<ActionResult<UserCart>> GetCart()
@@ -139,6 +139,7 @@ namespace GP.APIs.Controllers
 
             return Ok(cart);
         }
+        [Authorize(Roles = "Client")]
         [HttpDelete("remove-product")]
         public async Task<IActionResult> RemoveProductFromCart(int itemId)
         {
@@ -194,6 +195,7 @@ namespace GP.APIs.Controllers
 
             return Ok(new { message = "Product removed from cart." });
         }
+        [Authorize(Roles = "Client")]
         [HttpGet("cart-total")]
         public async Task<IActionResult> GetCartTotal()
         {
@@ -234,6 +236,7 @@ namespace GP.APIs.Controllers
         }
 
         [Authorize(Roles = "Client")]
+        //[Authorize]
         [HttpPost("Pay")]
         public async Task<IActionResult> Pay()
         {
