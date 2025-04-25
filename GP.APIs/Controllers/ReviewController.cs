@@ -10,6 +10,7 @@ using GP.Service.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
+using System.Security.Claims;
 
 namespace GP.APIs.Controllers
 {
@@ -78,29 +79,45 @@ namespace GP.APIs.Controllers
             _Repo.Commit();
             return Ok();
         }
-        
+
         //Add
         [HttpPost("AddReview")]
-        public IActionResult AddReview(int rating,string comment,string drId)
+        public async Task<IActionResult> AddReview(int rating, string comment, string drId)
         {
-            // Add new Review
+            // Get current user's email from the token
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
+                return Unauthorized(new ApiResponse(401, "User not authorized"));
 
-            if (ModelState.IsValid)
+            // Get user from the database
+            var currentUser = await _userManager.FindByEmailAsync(email);
+            if (currentUser == null)
+                return Unauthorized(new ApiResponse(401, "User not found"));
+
+            var userId = currentUser.Id;
+
+            // Validate doctor ID and rating
+            if (string.IsNullOrEmpty(drId) || rating < 1 || rating > 5)
+                return BadRequest(new ApiResponse(400, "Invalid doctor ID or rating"));
+
+            if (!ModelState.IsValid)
+                return BadRequest(new ApiResponse(400, "Invalid review data"));
+
+            // Create and save review
+            var review = new Review
             {
-                var review = new Review
-                {
-                    UserId = _userManager.GetUserId(User),
-                   DoctorId = drId,
-                   Rating = rating,
-                   Comment = comment,
-                };
-                _Repo.Create(review);
-                _Repo.Commit();
-                return Ok();
-            }
+                UserId = userId,
+                DoctorId = drId,
+                Rating = rating,
+                Comment = comment
+            };
 
-            return BadRequest(new ApiResponse(400));
+            _Repo.Create(review);
+            _Repo.Commit();
+
+            return Ok(new ApiResponse(200, "Review submitted successfully"));
         }
+
 
 
     }
