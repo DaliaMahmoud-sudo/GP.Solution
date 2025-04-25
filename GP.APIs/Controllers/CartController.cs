@@ -186,10 +186,15 @@ namespace GP.APIs.Controllers
 
             // Remove the product from the cart
             cart.Items.Remove(cartItem);
+          var  Product = _productRepository.GetOne(null, nop => nop.Name == cartItem.productName ,true);
+            if (Product == null) { return NotFound("not found product."); }
+            Product.StockQuantity += cartItem.Quantity;
 
             // Save changes
             _userCartRepository.Edit(cart);
             _userCartRepository.Commit();
+            _productRepository.Edit(Product);
+            _productRepository.Commit();
 
 
 
