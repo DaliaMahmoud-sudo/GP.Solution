@@ -22,7 +22,7 @@ namespace GP.Repository.Data
 
             if (!dbContext.products.Any())
             {
-                var ProductsData = File.ReadAllText("../GP.Repository/Data/DataSeed/products.json");
+                var ProductsData = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Dataseed/products.json"));
                 var Products = JsonSerializer.Deserialize<List<Product>>(ProductsData);
                 foreach (var Product in Products)
                 {
@@ -34,7 +34,7 @@ namespace GP.Repository.Data
             //seeding delivery
             if (!dbContext.DeliveryMethod.Any())
             {
-                var DeliveryMethodData = File.ReadAllText("../GP.Repository/Data/DataSeed/delivery.json");
+                var DeliveryMethodData = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Dataseed/delivery.json"));
                 var DeliveryMethod = JsonSerializer.Deserialize<List<DeliveryMethod>>(DeliveryMethodData);
                 foreach (var DeliveryMethods in DeliveryMethod)
                 {
