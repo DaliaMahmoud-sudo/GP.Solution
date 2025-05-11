@@ -131,14 +131,13 @@ namespace GP.APIs.Controllers
                     {
                         // Login ==> Create ID (cookies)
                         await signInManager.SignInAsync(userDb, userDTO.RememberMe);
-                        return Ok(new AppUserDto()
+                        return Ok(new AppUserResponseDto()
                         {
-
                             FirstName = userDb.FirstName,
                             LastName = userDb.LastName,
                             Email = userDb.Email,
+                            Id = userDb.Id,
                             Token = await _tokenService.CreateTokenAsync(userDb, userManager)
-
                         });
                     }
                     else
@@ -164,7 +163,7 @@ namespace GP.APIs.Controllers
         {
             var Email = User.FindFirstValue(ClaimTypes.Email);
             var user = await userManager.FindByEmailAsync(Email);
-            var ReturnedObject = new AppUserDto()
+            var ReturnedObject = new AppUserResponseDto()
             {
                 Id=user.Id,
                 FirstName = user.FirstName,
