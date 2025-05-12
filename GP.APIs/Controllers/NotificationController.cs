@@ -1,4 +1,5 @@
 ﻿using GP.APIs.DTOs;
+using GP.APIs.Errors;
 using GP.Core.Entities;
 using GP.Core.Entities.Identity;
 using GP.Core.IRepository;
@@ -32,7 +33,21 @@ namespace GP.APIs.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUserNotifications()
         {
-            var userId = _userManager.GetUserId(User);
+            //var userId = _userManager.GetUserId(User);
+
+            ///Fetching User Data
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
+                return Unauthorized(new ApiResponse(401));
+
+            // Get user from the database
+            var currentUser = await _userManager.FindByEmailAsync(email);
+            if (currentUser == null)
+                return Unauthorized(new ApiResponse(401));
+
+            var userId = currentUser.Id;
+            ///
+
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized("User not authenticated.");
 
