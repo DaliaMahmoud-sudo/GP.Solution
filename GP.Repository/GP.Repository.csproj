@@ -25,4 +25,13 @@
 	  
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Data\DataSeed\delivery.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\DataSeed\products.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
