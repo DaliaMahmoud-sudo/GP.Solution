@@ -4,7 +4,7 @@ namespace GP.APIs.DTOs
 {
     public class AppUserDto
     {
-        public string Id { get; set; }
+        public string? Id { get; set; }
         [Required]
         public string FirstName { get; set; }
         [Required]
@@ -20,7 +20,7 @@ namespace GP.APIs.DTOs
         [DataType(DataType.Password)]
         [Compare(nameof(Password))]
         public string ConfirmPassword { get; set; }
-        public string Token { get; set; }
+        //public string Token { get; set; }
         //[Required]
         //public string Address { get; set; }
 
