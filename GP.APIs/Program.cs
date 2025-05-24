@@ -110,6 +110,7 @@ namespace GP.APIs
             #endregion
 
             // Configure the HTTP request pipeline.
+            // remove condtition
                 app.UseSwagger();
                 app.UseSwaggerUI();
 

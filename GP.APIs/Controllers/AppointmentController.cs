@@ -24,7 +24,7 @@ namespace GP.APIs.Controllers
             this.userManager=userManager;
         }
         [Authorize(Roles = "Doctor")]
-        [HttpGet(" GetAppointmentsForDoctor")]
+        [HttpGet("GetAppointmentsForDoctor")]
         public async Task<IActionResult> GetAppointmentsForDoctor()
         {
             if (!User.IsInRole("Doctor"))
