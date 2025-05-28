@@ -84,6 +84,8 @@ namespace GP.APIs
             builder.Services.AddIdentityServices(builder.Configuration);
             builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
             StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+            builder.Services.AddHttpClient();
+
 
             #endregion
 
