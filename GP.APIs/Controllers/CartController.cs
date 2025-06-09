@@ -220,9 +220,9 @@ namespace GP.APIs.Controllers
 
 
             var cart = _userCartRepository.GetOne(includeProps: new Expression<Func<UserCart, object>>[]
-{
-        cart => cart.Items // Include the UserCartItems
-}, c => c.UserId == userId, true);
+        {
+                cart => cart.Items // Include the UserCartItems
+            }, c => c.UserId == userId, true);
             if (cart == null) return NotFound("Cart not found.");
 
             var total = cart.Items.Sum(item => item.Price * item.Quantity);
@@ -232,10 +232,10 @@ namespace GP.APIs.Controllers
         private CartItems FindCartItemByProductName(UserCart cart, string ProductName)
         {
             var cartItem = _cartItemsRepository.GetOne(
-    null,
-    ci => ci.productName == ProductName && ci.UserCartId == cart.Id,
-    true
-);
+            null,
+                ci => ci.productName == ProductName && ci.UserCartId == cart.Id,
+             true
+                    );
 
             return cartItem; // returns null if not found
         }
