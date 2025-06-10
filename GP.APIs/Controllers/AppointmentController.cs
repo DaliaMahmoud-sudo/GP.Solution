@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 using System.Security.Claims;
 
 namespace GP.APIs.Controllers
@@ -32,52 +33,99 @@ namespace GP.APIs.Controllers
                 return Forbid("Access denied: Only doctors can view these appointments.");
             }
 
-            // Get the current user's email from the token
             var email = User.FindFirstValue(ClaimTypes.Email);
             if (string.IsNullOrEmpty(email))
                 return Unauthorized(new ApiResponse(401));
 
-            // Get user from the database
             var currentUser = await userManager.FindByEmailAsync(email);
             if (currentUser == null)
                 return Unauthorized(new ApiResponse(401));
 
             var doctorId = currentUser.Id;
-            
-            var appointments = appointmentRepository.Get(expression: e => e.DoctorId == doctorId);
+
+            // Step 1: Get all appointments for this doctor
+            var appointments = appointmentRepository
+                .Get(expression: a => a.DoctorId == doctorId)
+                .ToList();
 
             if (!appointments.Any())
             {
                 return NotFound("No appointments found for this doctor.");
             }
-            return Ok(appointments);
+
+            // Step 2: Fetch related users (clients)
+            var userIds = appointments.Select(a => a.UserId).Distinct();
+
+            var users = userManager.Users
+                .Where(u => userIds.Contains(u.Id))
+                .Select(u => new { u.Id, FullName = u.FirstName + " " + u.LastName })
+                .ToList();
+
+            // Step 3: Build result
+            var result = appointments.Select(a => new
+            {
+                a.AppointmentId,
+                a.AppointmentDate,
+                a.Note,
+                PatientName = users.FirstOrDefault(u => u.Id == a.UserId)?.FullName,
+                DoctorName = currentUser.FirstName + " " + currentUser.LastName
+            });
+
+            return Ok(result);
         }
 
-        [Authorize(Roles ="Client")] // Ensures only authenticated users can access
+
+
+        [Authorize(Roles = "Client")]
         [HttpGet("GetAppointmentsForUser")]
         public async Task<IActionResult> GetAppointmentsForUser()
         {
-            // Get the current user's email from the token
             var email = User.FindFirstValue(ClaimTypes.Email);
             if (string.IsNullOrEmpty(email))
                 return Unauthorized(new ApiResponse(401));
 
-            // Get user from the database
             var currentUser = await userManager.FindByEmailAsync(email);
             if (currentUser == null)
                 return Unauthorized(new ApiResponse(401));
 
             var userId = currentUser.Id;
 
-
-            var appointments = appointmentRepository.Get(expression: e => e.UserId == userId);
+            // Step 1: Get appointments for current user
+            var appointments = appointmentRepository
+                .Get(expression: a => a.UserId == userId)
+                .ToList();
 
             if (!appointments.Any())
-            {
                 return NotFound("No appointments found.");
-            }
-            return Ok(appointments);
+
+            // Step 2: Manually fetch doctor and user names
+            var doctorIds = appointments.Select(a => a.DoctorId).Distinct();
+            var userIds = appointments.Select(a => a.UserId).Distinct();
+
+            var doctors = userManager.Users
+                .Where(u => doctorIds.Contains(u.Id))
+                .Select(u => new { u.Id, FullName = u.FirstName + " " + u.LastName })
+                .ToList();
+
+            var users = userManager.Users
+                .Where(u => userIds.Contains(u.Id))
+                .Select(u => new { u.Id, FullName = u.FirstName + " " + u.LastName })
+                .ToList();
+
+            // Step 3: Project final result
+            var result = appointments.Select(a => new
+            {
+                a.AppointmentId,
+                a.AppointmentDate,
+                a.Note,
+                DoctorName = doctors.FirstOrDefault(d => d.Id == a.DoctorId)?.FullName,
+                UserName = users.FirstOrDefault(u => u.Id == a.UserId)?.FullName
+            });
+
+            return Ok(result);
         }
+
+
 
         [Authorize(Roles = "Client")]
         [HttpPost("CreateAppointments")]

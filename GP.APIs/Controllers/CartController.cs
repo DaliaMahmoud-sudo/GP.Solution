@@ -241,32 +241,18 @@ namespace GP.APIs.Controllers
         }
 
         [Authorize(Roles = "Client")]
-        //[Authorize]
         [HttpPost("Pay")]
-        public async Task<IActionResult> Pay()
+        public async Task<IActionResult> Pay([FromBody] PayRequest request)
         {
-            // 1. Get current user
-            // Get the current user's email from the token
             var email = User.FindFirstValue(ClaimTypes.Email);
-            if (string.IsNullOrEmpty(email))
-                return Unauthorized(new ApiResponse(401));
+            if (string.IsNullOrEmpty(email)) return Unauthorized(new ApiResponse(401));
 
-            // Get user from the database
             var currentUser = await _userManager.FindByEmailAsync(email);
-            if (currentUser == null)
-                return Unauthorized(new ApiResponse(401));
+            if (currentUser == null) return Unauthorized(new ApiResponse(401));
 
             var userId = currentUser.Id;
             var firstname = currentUser.FirstName;
             var lastname = currentUser.LastName;
-
-            //if (string.IsNullOrEmpty(userId))
-            //    return Unauthorized(new ApiResponse(401));
-
-            //var user = await _userManager.FindByIdAsync(userId);
-            //if (user == null)
-            //    return Unauthorized(new ApiResponse(401));
-
 
             var cart = _userCartRepository.GetOne(
                 includeProps: [c => c.Items],
@@ -274,14 +260,11 @@ namespace GP.APIs.Controllers
                 tracked: true
             );
 
-            // 3. Validate cart
             if (cart == null || cart.Items == null || !cart.Items.Any())
                 return BadRequest("Your cart is empty.");
 
-            // 4. Calculate total
             var totalPrice = cart.Items.Sum(item => item.Price * item.Quantity);
 
-            // 5. Create payment record
             var payment = new Payment
             {
                 UserId = userId,
@@ -292,7 +275,6 @@ namespace GP.APIs.Controllers
             };
             paymentRepository.Create(payment);
 
-            // 6. Prepare Stripe session
             var sessionOptions = new SessionCreateOptions
             {
                 PaymentMethodTypes = new List<string> { "card" },
@@ -310,8 +292,8 @@ namespace GP.APIs.Controllers
                     Quantity = item.Quantity,
                 }).ToList(),
                 Mode = "payment",
-                SuccessUrl = $"{Request.Scheme}://{Request.Host}/checkout/success?payment_id={payment.paymentId}",
-                CancelUrl = $"{Request.Scheme}://{Request.Host}/checkout/cancel",
+                SuccessUrl = $"{request.SuccessUrl}?payment_id={payment.paymentId}",
+                CancelUrl = request.CancelUrl,
                 CustomerEmail = email,
                 Metadata = new Dictionary<string, string>
         {
@@ -320,19 +302,16 @@ namespace GP.APIs.Controllers
         }
             };
 
-            // 7. Create Stripe session
-            var sessionService = new SessionService();
-            var session = sessionService.Create(sessionOptions);
+            var session = new SessionService().Create(sessionOptions);
 
-           
             paymentRepository.Commit();
 
             cart.Items.Clear();
             _userCartRepository.Commit();
 
-            // 10. Return Stripe URL
             return Ok(new { url = session.Url });
         }
+
 
 
 
